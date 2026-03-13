@@ -603,15 +603,24 @@ func handleSearch(s *store.Store) server.ToolHandlerFunc {
 
 		var b strings.Builder
 		fmt.Fprintf(&b, "Found %d memories:\n\n", len(results))
+		anyTruncated := false
 		for i, r := range results {
 			project := ""
 			if r.Project != nil {
 				project = fmt.Sprintf(" | project: %s", *r.Project)
 			}
+			preview := truncate(r.Content, 300)
+			if len(r.Content) > 300 {
+				anyTruncated = true
+				preview += " [truncated — use mem_get_observation(id) for full content]"
+			}
 			fmt.Fprintf(&b, "[%d] #%d (%s) — %s\n    %s\n    %s%s | scope: %s\n\n",
 				i+1, r.ID, r.Type, r.Title,
-				truncate(r.Content, 300),
+				preview,
 				r.CreatedAt, project, r.Scope)
+		}
+		if anyTruncated {
+			fmt.Fprintf(&b, "---\n⚠ Content previews above are truncated to 300 chars. Call mem_get_observation(id: <ID>) to retrieve full content.\n")
 		}
 
 		return mcp.NewToolResultText(b.String()), nil
