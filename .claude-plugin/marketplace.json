@@ -12,7 +12,7 @@
   "plugins": [
     {
       "name": "engram",
-      "source": ".",
+      "source": "./",
       "description": "Persistent memory with session tracking, compaction recovery, and Memory Protocol. Gives Claude a brain that survives across sessions.",
       "version": "0.1.1",
       "author": {
